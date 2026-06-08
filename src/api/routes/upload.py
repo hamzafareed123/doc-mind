@@ -14,13 +14,13 @@ os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 async def post_file(file: UploadFile):
 
     file_path = os.path.join(settings.UPLOAD_DIR, file.filename)
-    print(file_path)
+    collection_name = os.path.splitext( file.filename)[0]+"_col"
 
     content = await file.read()
 
     async with aiofiles.open(file_path, "wb") as f:
        await f.write(content)
 
-    chunks = ingest_document(file_path)
+    chunks = ingest_document(file_path,collection_name)
 
-    return {"status": "success", "saved_path": file_path, "total-chunks": chunks}
+    return {"status": "success","collection-name":collection_name, "total-chunks": chunks}

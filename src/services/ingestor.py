@@ -7,7 +7,7 @@ from src.core.config import settings
 embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 
-def ingest_document(file_name):
+def ingest_document(file_name, collection_name: str):
 
     loader = PyPDFLoader(file_name)
 
@@ -20,7 +20,10 @@ def ingest_document(file_name):
     chunks = text_splitter.split_documents(document)
 
     db = Chroma.from_documents(
-        documents=chunks, embedding=embedding, persist_directory=settings.CHROMA_PATH
+        documents=chunks,
+        embedding=embedding,
+        persist_directory=settings.CHROMA_PATH,
+        collection_name=collection_name,
     )
-    
+
     return len(chunks)
