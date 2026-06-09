@@ -1,7 +1,19 @@
 from fastapi import FastAPI
 from src.api.routes import router
+from src.db.database import create_tables
+from contextlib import asynccontextmanager
+import src.db.model
 
-app = FastAPI(title="DOC-MIND",version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app:FastAPI):
+    create_tables()
+    yield
+    
+    
+    
+app = FastAPI(title="DOC-MIND",version="1.0.0",lifespan=lifespan)
+
 
 app.include_router(router)
 
