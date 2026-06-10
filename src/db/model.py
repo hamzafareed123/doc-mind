@@ -5,7 +5,7 @@ from datetime import datetime
 
 class ChatHistory(Base):
     
-    __tablename__='users'
+    __tablename__='chat_history'
     
     id=Column(Integer,primary_key=True)
     session_id=Column(String,nullable=False)
