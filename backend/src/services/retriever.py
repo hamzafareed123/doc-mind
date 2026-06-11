@@ -6,6 +6,7 @@ embedding = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L
 
 
 def retrieve_docs(query: str, collection_name: str, k: int = 10) -> list:
+    print("collection_name =", repr(collection_name))
     db = Chroma(
         persist_directory=settings.CHROMA_PATH,
         collection_name=collection_name,

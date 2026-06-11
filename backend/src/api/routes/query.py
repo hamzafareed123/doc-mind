@@ -3,7 +3,7 @@ from langchain_groq import ChatGroq
 from src.core.config import settings
 from pydantic import BaseModel
 from src.services.retriever import retrieve_docs
-from src.services.chat_history import get_history,save_message
+from src.services.chat_history import get_history, save_message
 
 router = APIRouter()
 
@@ -29,22 +29,24 @@ def user_query(request: Question):
     context_text = "\n\n".join([doc.page_content for doc in docs])
 
     prompt = f"""
-    You are an AI assistant analyzing documents. Use the following context to answer the question.
-    If you do not know the answer based on the context, say you don't know.
+     You are an AI assistant analyzing a resume/CV document.
+Use the following context to answer the question accurately.
+If the information exists anywhere in the context, find and return it.
+Only say you don't know if it's truly not present.
 
-    Context:
-    {context_text}
-    
-    Conversation History:
-    {history_text}
+Context:
+{context_text}
 
-    Question: {request.query}
-    Answer:
-    """
+Conversation History:
+{history_text}
+
+Question: {request.query}
+Answer:
+"""
 
     result = llm.invoke(prompt)
-    
-    save_message(request.session_id,"User",request.query)
-    save_message(request.session_id,"assistant",result.content)
+
+    save_message(request.session_id, "User", request.query)
+    save_message(request.session_id, "assistant", result.content)
 
     return {"question": request.query, "answer": result.content}
