@@ -15,6 +15,8 @@ async def post_file(file: UploadFile):
 
     file_path = os.path.join(settings.UPLOAD_DIR, file.filename)
     collection_name = os.path.splitext( file.filename)[0]+"_col"
+    
+    print(collection_name)
 
     content = await file.read()
 

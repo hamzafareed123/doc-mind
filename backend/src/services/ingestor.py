@@ -12,9 +12,13 @@ def ingest_document(file_name, collection_name: str):
     loader = PyPDFLoader(file_name)
 
     document = loader.load()
+    
+    print(f"documents length {len(document)}")
+    for i, doc in enumerate(document):
+        print(f"Page {i+1} preview: {doc.page_content[:100]}")  # add this
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=1000, chunk_overlap=200, separators=["\n\n", "\n", " ", ""]
+        chunk_size=1500, chunk_overlap=300, separators=["\n\n", "\n", " ", ""]
     )
 
     chunks = text_splitter.split_documents(document)
