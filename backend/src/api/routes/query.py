@@ -4,6 +4,7 @@ from src.core.config import settings
 from pydantic import BaseModel
 from src.services.retriever import retrieve_docs
 from src.services.chat_history import get_history, save_message
+from fastapi.responses import StreamingResponse
 
 router = APIRouter()
 
@@ -16,6 +17,18 @@ class Question(BaseModel):
     query: str
     collection_name: str
     session_id: str
+
+
+def stream_response(prompt: str, session_id: str, query: str):
+    save_message(session_id, "user", query)
+    full_response = ""
+    for chunk in llm.stream(prompt):
+        print(f"chunk: {chunk.content}", end="", flush=True) 
+        full_response += chunk.content
+        yield chunk.content
+        
+    print(f"\n✅ Full response: {full_response[:100]}") 
+    save_message(session_id, "assistance", full_response)
 
 
 @router.post("")
@@ -44,9 +57,7 @@ Question: {request.query}
 Answer:
 """
 
-    result = llm.invoke(prompt)
-
-    save_message(request.session_id, "User", request.query)
-    save_message(request.session_id, "assistant", result.content)
-
-    return {"question": request.query, "answer": result.content}
+    return StreamingResponse(
+        stream_response(prompt, request.session_id, request.query),
+        media_type="text/plain",
+    )
